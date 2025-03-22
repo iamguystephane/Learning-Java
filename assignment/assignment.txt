@@ -1,0 +1,10 @@
+
+
+Task: inplement exception handling in a program that reads integers from the user.
+
+Requirements:
+
+- Prompt the user to enter an integer between 1 and 100 inclusive.
+- Handle invalid inputs and prevent the program from crashing.
+- Implement at least one of the exception handling mechanisms (try-catch, finally, throw)
+- Include meaningful error messages and log errors if possible.
