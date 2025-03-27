@@ -15,7 +15,7 @@ class linkedListOperations {
     public void insertAtEnd(int data) {
         Node newnNode = new Node(data);
         if (head == null) {
-            head = newnNode;
+            head = newnNode; 
         } else {
             Node temp = head;
             while (temp.next != null) {
