@@ -1,6 +1,5 @@
 package binarySort;
 import java.util.Scanner;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 
 
