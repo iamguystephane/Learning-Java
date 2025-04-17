@@ -52,6 +52,7 @@ class doubleLinkedList {
 public class doublyLinkedList {
     public static void main(String [] args) {
         doubleLinkedList list = new doubleLinkedList();
+        
         list.insert(10);
         list.insert(20);
         list.insert(30);
