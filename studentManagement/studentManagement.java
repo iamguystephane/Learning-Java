@@ -1,109 +1,146 @@
 package studentManagement;
+
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.InputMismatchException;
 import java.io.*;
 
-class Student implements Serializable{
+class Student {
     private String grade;
     private String name;
     private String ID;
-    
+
     public Student(String grade, String name, String ID) {
         this.grade = grade;
         this.name = name;
         this.ID = ID;
     }
+
     String getName() {
         return this.name;
     }
+
+    String getGrade() {
+        return this.grade;
+    }
+
+    String getID() {
+        return this.ID;
+    }
+
     void setGrade(String newGrade) {
         this.grade = newGrade;
     }
+
     void setName(String newName) {
         this.name = newName;
     }
+
     void setID(String newID) {
         this.ID = newID;
     }
+
     @Override
     public String toString() {
-        return "Name: " + this.name + "ID: " + this.ID + "Grade: " + this.grade;
+        return "Name: " + this.name + ", ID: " + this.ID + ", Grade: " + this.grade;
     }
 }
+
 class studentManager {
     private ArrayList<Student> arr;
-    private final String FILE_NAME = "student.dat";
+    private final String FILE_NAME = "studentManagement/student.txt";
+
     public studentManager() {
         this.arr = loadFromFile();
     }
+
     public void saveToFile() {
-        try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
-            oos.writeObject(arr);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            writer.write("Name,ID,Grade");
+            writer.newLine();
+            for (Student s : arr) {
+                writer.write(s.getName() + "," + s.getID() + "," + s.getGrade());
+                writer.newLine();
+            }
         } catch (IOException e) {
             System.out.println("Error saving file: " + e.getMessage());
         }
     }
-    @SuppressWarnings("unchecked")
+
     private ArrayList<Student> loadFromFile() {
-        try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
-            return (ArrayList<Student>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        ArrayList<Student> list = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line = reader.readLine(); // Skip header
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    list.add(new Student(parts[2], parts[0], parts[1])); // grade, name, ID
+                }
+            }
+        } catch (IOException e) {
             return new ArrayList<>();
         }
+        return list;
     }
+
     public void addStudent(Student student) {
-       this.arr.add(student);
-       saveToFile();
-       System.out.println("Student added and saved!");
+        this.arr.add(student);
+        saveToFile();
+        System.out.println("Student added and saved!");
     }
+
     public void deleteStudent(String name) {
         boolean removed = arr.removeIf(s -> s.getName().equalsIgnoreCase(name));
-        if(removed) {
+        if (removed) {
             saveToFile();
             System.out.println("Student with name " + name + " was removed");
         } else {
             System.out.println("Failed to remove student");
         }
     }
-    public void updateStudent(String name, String newGrade, String newId, String newName) {
-        for(Student s : arr) {
-            if(s.getName().equalsIgnoreCase(name)) {
-                s.setGrade(newGrade);
+
+    public boolean updateStudent(String name, String newGrade, String newId, String newName) {
+        boolean isUpdated = false;
+        for (Student s : arr) {
+            if (s.getName().equalsIgnoreCase(name)) {
+                s.setID(newId);
                 s.setGrade(newGrade);
                 s.setName(newName);
+                isUpdated = true;
                 saveToFile();
-                System.out.println("Student with name " + name + " was updated");
             }
         }
-        System.out.println("Student with name " + name + "not found");
+        return isUpdated;
     }
 }
-    
-
-
 
 public class studentManagement {
     public static int askChoice(Scanner scanner) {
+        int choice;
         try {
+            System.out.println("\n--- Student Management System ---");
             System.out.println("1. Add Student");
             System.out.println("2. Delete Student");
             System.out.println("3. Update Student");
             System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
+            choice = scanner.nextInt();
             scanner.nextLine();
-            return choice;
-        } catch(InputMismatchException e) {
-            System.out.println("Please enter an integer");
+        } catch (InputMismatchException e) {
+            choice = 10;
+            scanner.nextLine();
+            System.out.println("Invalid input. Please enter an integer");
         }
+        return choice;
     }
+
     public static void main(String[] args) {
         studentManager m1 = new studentManager();
         Scanner scanner = new Scanner(System.in);
-        int choice;
-        choice = askChoice(scanner);
+        int choice = askChoice(scanner);
+
         while (choice == 1 || choice == 2 || choice == 3 || choice == 0) {
-            switch(choice) {
+            switch (choice) {
                 case 1:
                     System.out.print("Enter student's name: ");
                     String name = scanner.nextLine();
@@ -112,35 +149,41 @@ public class studentManagement {
                     System.out.print("Enter student's grade: ");
                     String grade = scanner.nextLine();
                     m1.addStudent(new Student(grade, name, id));
-                    choice = askChoice(scanner);
                     break;
                 case 2:
                     System.out.print("Enter student's name to be deleted: ");
-                    String name = scanner.nextLine();
-                    m1.deleteStudent(name);
-                    choice = askChoice(scanner);
+                    String studName = scanner.nextLine();
+                    m1.deleteStudent(studName);
                     break;
                 case 3:
                     System.out.print("Enter student's name to be modified: ");
-                    String name = scanner.nextLine();
-                     System.out.print("Enter student's new name: ");
+                    String studentName = scanner.nextLine();
+                    System.out.print("Enter student's new name: ");
                     String newName = scanner.nextLine();
                     System.out.print("Enter student's new ID: ");
-                    String id = scanner.nextLine();
+                    String studid = scanner.nextLine();
                     System.out.print("Enter student's new grade: ");
-                    String grade = scanner.nextLine();
-                    m1.updateStudent(name, grade, ID, newName);
-                    choice = askChoice(scanner);
+                    String studgrade = scanner.nextLine();
+                    boolean isUpdated = m1.updateStudent(studentName, studgrade, studid, newName);
+                    if (isUpdated) {
+                        System.out.println("Student with name " + studentName + " was updated successfully!");
+                    } else {
+                        System.out.println("Student " + studentName + " was not found!");
+                    }
                     break;
-                case 4:
-                    System.out.print("Exiting...");
+                case 0:
+                    System.out.println("Exiting...");
                     choice = 10;
                     break;
                 default:
-                    System.out.print("Invalid input. Exiting...");
+                    System.out.println("Invalid input. Exiting...");
                     choice = 10;
                     break;
             }
+            if (choice != 10) {
+                choice = askChoice(scanner);
+            }
         }
+        scanner.close();
     }
 }
