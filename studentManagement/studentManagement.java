@@ -83,7 +83,64 @@ class studentManager {
 
 
 public class studentManagement {
+    public static int askChoice(Scanner scanner) {
+        try {
+            System.out.println("1. Add Student");
+            System.out.println("2. Delete Student");
+            System.out.println("3. Update Student");
+            System.out.println("0. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            return choice;
+        } catch(InputMismatchException e) {
+            System.out.println("Please enter an integer");
+        }
+    }
     public static void main(String[] args) {
-
+        studentManager m1 = new studentManager();
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+        choice = askChoice(scanner);
+        while (choice == 1 || choice == 2 || choice == 3 || choice == 0) {
+            switch(choice) {
+                case 1:
+                    System.out.print("Enter student's name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter student's ID: ");
+                    String id = scanner.nextLine();
+                    System.out.print("Enter student's grade: ");
+                    String grade = scanner.nextLine();
+                    m1.addStudent(new Student(grade, name, id));
+                    choice = askChoice(scanner);
+                    break;
+                case 2:
+                    System.out.print("Enter student's name to be deleted: ");
+                    String name = scanner.nextLine();
+                    m1.deleteStudent(name);
+                    choice = askChoice(scanner);
+                    break;
+                case 3:
+                    System.out.print("Enter student's name to be modified: ");
+                    String name = scanner.nextLine();
+                     System.out.print("Enter student's new name: ");
+                    String newName = scanner.nextLine();
+                    System.out.print("Enter student's new ID: ");
+                    String id = scanner.nextLine();
+                    System.out.print("Enter student's new grade: ");
+                    String grade = scanner.nextLine();
+                    m1.updateStudent(name, grade, ID, newName);
+                    choice = askChoice(scanner);
+                    break;
+                case 4:
+                    System.out.print("Exiting...");
+                    choice = 10;
+                    break;
+                default:
+                    System.out.print("Invalid input. Exiting...");
+                    choice = 10;
+                    break;
+            }
+        }
     }
 }
